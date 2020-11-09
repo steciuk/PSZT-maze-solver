@@ -1,12 +1,11 @@
-from df_maze import Maze
+from maze import Maze
 
-# Maze dimensions (ncols, nrows)
-nx, ny = 15, 15
-# Maze entry position
-ix, iy = 0, 0
+# gen seeded 13x11 maze
+# maze = Maze(13, 11, 0, 0, 1)
+# maze.make_maze()
 
-maze = Maze(nx, ny, ix, iy)
-maze.make_maze()
+# gen maze savestate
+# maze.generate_txt_save('maze.txt')
 
-print(maze)
-maze.write_svg('maze.svg')
+# create maze savestate
+# maze = Maze.from_file("numbermap.txt")
