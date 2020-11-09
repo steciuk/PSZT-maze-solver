@@ -44,6 +44,12 @@ class Maze:
         self.ix, self.iy = ix, iy
         self.maze_map = [[Cell(x, y) for x in range(nx)] for y in range(ny)]
         self.num_map = []
+        """It only make sense to define 4 states for each cell, remembering state of two of its walls, cause adjacent 
+        cells will store information about remaining walls.
+         __          __          --          --
+        |  | - 0    |    - 1    |  | - 2    |   - 3
+         --          --                  
+        """
         if seed is not None:
             random.seed(seed)
 
@@ -62,6 +68,8 @@ class Maze:
         return maze
 
     def maze_from_num_map(self):
+        """Generate cellular maze structure from a number map"""
+
         for row in self.maze_map:
             for cell in row:
                 state = self.num_map[cell.y][cell.x]
@@ -74,6 +82,8 @@ class Maze:
                     cell.knock_down_wall(self.cell_at(cell.x, cell.y + 1), 'S')
 
     def generate_num_map(self):
+        """Generate number map from the cellular maze structure"""
+
         for row in self.maze_map:
             rowlist = []
             for cell in row:
@@ -88,6 +98,8 @@ class Maze:
             self.num_map.append(rowlist)
 
     def generate_txt_save(self, filename):
+        """Write nummap to a file"""
+
         if not self.num_map:
             self.generate_num_map()
 
