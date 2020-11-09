@@ -2,10 +2,6 @@
 import random
 
 
-# Create a maze using the depth-first algorithm described at
-# https://scipython.com/blog/making-a-maze/
-# Christian Hill, April 2017.
-
 class Cell:
     """A cell in the maze.
 
@@ -38,21 +34,70 @@ class Cell:
 class Maze:
     """A Maze, represented as a grid of cells."""
 
-    def __init__(self, nx, ny, ix=0, iy=0):
-        """Initialize the maze grid.
+    def __init__(self, nx, ny, ix=0, iy=0, seed=None):
+        """Initialize the not seeded maze grid.
         The maze consists of nx x ny cells and will be constructed starting
         at the cell indexed at (ix, iy).
 
         """
-
         self.nx, self.ny = nx, ny
         self.ix, self.iy = ix, iy
-        self.maze_map = [[Cell(x, y) for y in range(ny)] for x in range(nx)]
+        self.maze_map = [[Cell(x, y) for x in range(nx)] for y in range(ny)]
+        self.num_map = []
+        if seed is not None:
+            random.seed(seed)
+
+    @classmethod
+    def from_file(cls, filename):
+        """Initialize maze from a file"""
+
+        num_map = []
+        with open(filename, 'r') as f:
+            lines = f.read().splitlines()
+            num_map = [[x for x in line] for line in lines]
+
+        maze = cls(len(num_map[0]), len(num_map))
+        maze.num_map = num_map
+        maze.maze_from_num_map()
+        return maze
+
+    def maze_from_num_map(self):
+        for row in self.maze_map:
+            for cell in row:
+                state = self.num_map[cell.y][cell.x]
+                if state == '1':
+                    cell.knock_down_wall(self.cell_at(cell.x + 1, cell.y), 'E')
+                elif state == '2':
+                    cell.knock_down_wall(self.cell_at(cell.x, cell.y + 1), 'S')
+                elif state == '3':
+                    cell.knock_down_wall(self.cell_at(cell.x + 1, cell.y), 'E')
+                    cell.knock_down_wall(self.cell_at(cell.x, cell.y + 1), 'S')
+
+    def generate_num_map(self):
+        for row in self.maze_map:
+            rowlist = []
+            for cell in row:
+                if not cell.walls['E'] and not cell.walls['S']:
+                    rowlist.append('3')
+                elif not cell.walls['S']:
+                    rowlist.append('2')
+                elif not cell.walls['E']:
+                    rowlist.append('1')
+                else:
+                    rowlist.append('0')
+            self.num_map.append(rowlist)
+
+    def generate_txt_save(self, filename):
+        if not self.num_map:
+            self.generate_num_map()
+
+        with open(filename, 'w') as f:
+            f.write('\n'.join(map(''.join, self.num_map)))
 
     def cell_at(self, x, y):
         """Return the Cell object at (x,y)."""
 
-        return self.maze_map[x][y]
+        return self.maze_map[y][x]
 
     def __str__(self):
         """Return a (crude) string representation of the maze."""
@@ -61,14 +106,14 @@ class Maze:
         for y in range(self.ny):
             maze_row = ['|']
             for x in range(self.nx):
-                if self.maze_map[x][y].walls['E']:
+                if self.maze_map[y][x].walls['E']:
                     maze_row.append(' |')
                 else:
                     maze_row.append('  ')
             maze_rows.append(''.join(maze_row))
             maze_row = ['|']
             for x in range(self.nx):
-                if self.maze_map[x][y].walls['S']:
+                if self.maze_map[y][x].walls['S']:
                     maze_row.append('-+')
                 else:
                     maze_row.append(' +')
