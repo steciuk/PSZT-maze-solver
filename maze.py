@@ -1,5 +1,6 @@
 # df_maze.py
 import random
+from collections import defaultdict
 
 
 class Cell:
@@ -34,6 +35,9 @@ class Cell:
 class Maze:
     """A Maze, represented as a grid of cells."""
 
+    num_map = []
+    graph = defaultdict(set)
+
     def __init__(self, nx, ny, ix=0, iy=0, seed=None):
         """Initialize the not seeded maze grid.
         The maze consists of nx x ny cells and will be constructed starting
@@ -42,8 +46,8 @@ class Maze:
         """
         self.nx, self.ny = nx, ny
         self.ix, self.iy = ix, iy
+
         self.maze_map = [[Cell(x, y) for x in range(nx)] for y in range(ny)]
-        self.num_map = []
         """It only make sense to define 4 states for each cell, remembering state of two of its walls, cause adjacent 
         cells will store information about remaining walls.
          __          __          --          --
@@ -53,11 +57,13 @@ class Maze:
         if seed is not None:
             random.seed(seed)
 
+        self.make_maze()
+        self.generate_graph()
+
     @classmethod
     def from_file(cls, filename):
         """Initialize maze from a file"""
 
-        num_map = []
         with open(filename, 'r') as f:
             lines = f.read().splitlines()
             num_map = [[x for x in line] for line in lines]
@@ -65,7 +71,36 @@ class Maze:
         maze = cls(len(num_map[0]), len(num_map))
         maze.num_map = num_map
         maze.maze_from_num_map()
+        maze.generate_graph()
         return maze
+
+    def print_cords(self):
+        for row in self.maze_map:
+            for cell in row:
+                print(str(cell.x) + ',' + str(cell.y), ' ', end='')
+            print()
+
+    def find_neighbours(self, cell):
+        """Returns a list of neighbours you can move to"""
+
+        delta = [('W', (-1, 0)),
+                 ('E', (1, 0)),
+                 ('S', (0, 1)),
+                 ('N', (0, -1))]
+        neighbours = []
+        for direction, (dx, dy) in delta:
+            x2, y2 = cell.x + dx, cell.y + dy
+            if (0 <= x2 < self.nx) and (0 <= y2 < self.ny):
+                neighbour = self.cell_at(x2, y2)
+                neighbours.append((direction, neighbour))
+        return neighbours
+
+    def generate_graph(self):
+        for row in self.maze_map:
+            for cell in row:
+                for neighbour in self.find_neighbours(cell):
+                    if not cell.walls[neighbour[0]]:
+                        self.graph[cell].add(neighbour[1])
 
     def maze_from_num_map(self):
         """Generate cellular maze structure from a number map"""
@@ -182,7 +217,7 @@ class Maze:
             print('<line x1="0" y1="0" x2="0" y2="{}"/>'.format(height), file=f)
             print('</svg>', file=f)
 
-    def find_valid_neighbours(self, cell):
+    def find_unvisited_neighbours(self, cell):
         """Return a list of unvisited neighbours to cell."""
 
         delta = [('W', (-1, 0)),
@@ -207,7 +242,7 @@ class Maze:
         nv = 1
 
         while nv < n:
-            neighbours = self.find_valid_neighbours(current_cell)
+            neighbours = self.find_unvisited_neighbours(current_cell)
 
             if not neighbours:
                 # We've reached a dead end: backtrack.
