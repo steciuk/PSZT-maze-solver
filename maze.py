@@ -57,7 +57,6 @@ class Maze:
         if seed is not None:
             random.seed(seed)
 
-        self.make_maze()
         self.generate_graph()
 
     @classmethod
