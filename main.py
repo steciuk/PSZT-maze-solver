@@ -2,7 +2,7 @@ from maze import Maze
 
 # gen seeded 13x11 maze
 maze = Maze(13, 11, 0, 0)
-maze.make_maze()
+#maze.make_maze()
 
 # gen maze savestate
 maze.generate_txt_save('maze.txt')

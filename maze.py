@@ -57,6 +57,9 @@ class Maze:
         if seed is not None:
             random.seed(seed)
 
+        if not self.num_map:
+            self.make_maze()
+
         self.generate_graph()
 
     @classmethod
@@ -73,6 +76,7 @@ class Maze:
         maze.generate_graph()
         return maze
 
+    # for testing
     def print_cords(self):
         for row in self.maze_map:
             for cell in row:
@@ -95,6 +99,8 @@ class Maze:
         return neighbours
 
     def generate_graph(self):
+        """Generates a graph representing the maze Dictionary<(Cell, set<Cell>)>"""
+
         for row in self.maze_map:
             for cell in row:
                 for neighbour in self.find_neighbours(cell):
@@ -233,6 +239,8 @@ class Maze:
         return neighbours
 
     def make_maze(self):
+        """Generates a maze for constructed maze object"""
+
         # Total number of cells.
         n = self.nx * self.ny
         cell_stack = []
