@@ -40,6 +40,7 @@ class Maze:
 
     num_map = []
     graph = defaultdict(set)
+    path = []
 
     def __init__(self, nx, ny, ix=0, iy=0, seed=None):
         """Initialize the not seeded maze grid.
@@ -193,6 +194,12 @@ class Maze:
             print('<line x1="{}" y1="{}" x2="{}" y2="{}"/>'
                   .format(ww_x1, ww_y1, ww_x2, ww_y2), file=ww_f)
 
+        def write_square(ww_f, ww_x1, ww_y1, ww_x2, ww_y2):
+            """Write a single square for found path"""
+
+            print('<rect x="{}" y="{}" width="{}" height="{}"/>'
+                  .format(ww_x1, ww_y1, ww_x2, ww_y2), file=ww_f)
+
         # Write the SVG image file for maze
         with open(filename, 'w') as f:
             # SVG preamble and styles.
@@ -207,10 +214,16 @@ class Maze:
             print('line {', file=f)
             print('    stroke: #000000;\n    stroke-linecap: square;', file=f)
             print('    stroke-width: 5;\n}', file=f)
+            print('rect {', file=f)
+            print('    fill: #cc0000;\n}', file=f)
             print(']]></style>\n</defs>', file=f)
             # Draw the "South" and "East" walls of each cell, if present (these
             # are the "North" and "West" walls of a neighbouring cell in
             # general, of course).
+            for cell in self.path:
+                x1, y1, h, w = cell.x * scx, cell.y * scy,  scx + 1, scy + 1
+                write_square(f, x1, y1, h, w)
+
             for x in range(self.nx):
                 for y in range(self.ny):
                     if self.cell_at(x, y).walls['S']:
