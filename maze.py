@@ -20,6 +20,9 @@ class Cell:
         self.x, self.y = x, y
         self.walls = {'N': True, 'S': True, 'E': True, 'W': True}
 
+    def __repr__(self):
+        return "(" + str(self.x) + ", " + str(self.y) + ")"
+
     def has_all_walls(self):
         """Does this cell still have all its walls?"""
 
