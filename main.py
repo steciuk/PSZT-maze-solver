@@ -2,8 +2,8 @@ from maze import Maze, Cell
 import algorithms
 
 # gen seeded 13x11 maze
-maze = Maze(40, 40, 0, 0, 1)
-start, end = maze.cell_at(0, 0), maze.cell_at(39, 39)
+maze = Maze(80, 80, 0, 0, 2)
+start, end = maze.cell_at(0, 0), maze.cell_at(59, 59)
 maze.path = algorithms.depth_first(maze, start, end)
 
 # gen maze savestate

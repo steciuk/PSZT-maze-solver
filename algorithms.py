@@ -50,7 +50,7 @@ def depth_first(maze, start, goal):
         for neighbour in graph[current]:
             if neighbour in visited:
                 continue
-
-            new_path.append(neighbour)
-            stack.append((new_path, neighbour))
+            append_path = list(new_path)
+            append_path.append(neighbour)
+            stack.append((append_path, neighbour))
     return "NO WAY!"
