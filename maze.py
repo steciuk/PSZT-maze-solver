@@ -39,10 +39,10 @@ class Maze:
     """A Maze, represented as a grid of cells."""
 
     num_map = []
-    graph = defaultdict(set)
+    graph = defaultdict(list)
     path = []
 
-    def __init__(self, nx, ny, ix=0, iy=0, seed=None):
+    def __init__(self, nx, ny, ix=0, iy=0, seed=None, from_file=False):
         """Initialize the not seeded maze grid.
         The maze consists of nx x ny cells and will be constructed starting
         at the cell indexed at (ix, iy).
@@ -61,7 +61,7 @@ class Maze:
         if seed is not None:
             random.seed(seed)
 
-        if not self.num_map:
+        if not from_file:
             self.make_maze()
 
         self.generate_graph()
@@ -74,7 +74,7 @@ class Maze:
             lines = f.read().splitlines()
             num_map = [[x for x in line] for line in lines]
 
-        maze = cls(len(num_map[0]), len(num_map))
+        maze = cls(len(num_map[0]), len(num_map), from_file=True)
         maze.num_map = num_map
         maze.maze_from_num_map()
         maze.generate_graph()
@@ -90,10 +90,7 @@ class Maze:
     def find_neighbours(self, cell):
         """Returns a list of neighbours you can move to"""
 
-        delta = [('W', (-1, 0)),
-                 ('E', (1, 0)),
-                 ('S', (0, 1)),
-                 ('N', (0, -1))]
+        delta = [('E', (1, 0)), ('S', (0, 1)), ('W', (-1, 0)), ('N', (0, -1))]
         neighbours = []
         for direction, (dx, dy) in delta:
             x2, y2 = cell.x + dx, cell.y + dy
@@ -109,7 +106,8 @@ class Maze:
             for cell in row:
                 for neighbour in self.find_neighbours(cell):
                     if not cell.walls[neighbour[0]]:
-                        self.graph[cell].add(neighbour[1])
+                        if neighbour[1] not in self.graph[cell]:
+                            self.graph[cell].append(neighbour[1])
 
     def maze_from_num_map(self):
         """Generate cellular maze structure from a number map"""
@@ -221,7 +219,7 @@ class Maze:
             # are the "North" and "West" walls of a neighbouring cell in
             # general, of course).
             for cell in self.path:
-                x1, y1, h, w = cell.x * scx, cell.y * scy,  scx + 1, scy + 1
+                x1, y1, h, w = cell.x * scx, cell.y * scy, scx + 1, scy + 1
                 write_square(f, x1, y1, h, w)
 
             for x in range(self.nx):
