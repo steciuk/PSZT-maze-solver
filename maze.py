@@ -42,7 +42,7 @@ class Maze:
     graph = defaultdict(list)
     path = []
 
-    def __init__(self, nx, ny, ix=0, iy=0, seed=None, from_file=False):
+    def __init__(self, nx, ny, ix=0, iy=0, seed=None, one_route=True, wall_knock=0.25, from_file=False):
         """Initialize the not seeded maze grid.
         The maze consists of nx x ny cells and will be constructed starting
         at the cell indexed at (ix, iy).
@@ -50,6 +50,9 @@ class Maze:
         """
         self.nx, self.ny = nx, ny
         self.ix, self.iy = ix, iy
+
+        self.one_route = one_route
+        self.wall_knock = wall_knock
 
         self.maze_map = [[Cell(x, y) for x in range(nx)] for y in range(ny)]
         """It only make sense to define 4 states for each cell, remembering state of two of its walls, cause adjacent 
@@ -276,3 +279,13 @@ class Maze:
             cell_stack.append(current_cell)
             current_cell = next_cell
             nv += 1
+
+        if not self.one_route:
+            for x in range(self.nx):
+                for y in range(self.ny):
+                    if random.uniform(0, 1) < self.wall_knock:
+                        current_cell = self.cell_at(x, y)
+                        neighbours = self.find_neighbours(current_cell)
+                        neighbour_to_knock = random.choice(neighbours)
+                        current_cell.knock_down_wall(neighbour_to_knock[1], neighbour_to_knock[0])
+
