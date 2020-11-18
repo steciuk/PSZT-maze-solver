@@ -44,7 +44,7 @@ def depth_first(maze, start, goal):
     while stack:
         path, current = stack.pop()
         if current == goal:
-            print("checked nodes:", num)
+            print("Checked nodes:", num)
             return path
 
         if current in visited:
@@ -62,8 +62,8 @@ def depth_first(maze, start, goal):
     return "NO WAY!"
 
 def iter_deepening(maze, start, goal):
-    for depth in count(start=0):
-        result, path = depth_limited(maze.graph, ([start], []), goal, depth)
+    for depth in range(maze.nx * maze.ny):
+        result, path = depth_limited(maze.graph, start, goal, depth)
         if result is False:
             continue
         print("Found a path to " + repr(goal) + ". Resulting depth: " + str(depth))
@@ -71,38 +71,14 @@ def iter_deepening(maze, start, goal):
 
     raise ValueError("There's no such path! (Reached maximum depth value)")
 
-def depth_limited(graph, nodes, goal, depth):
-    path, visited = nodes
-    node = path[-1]
-    if node == goal:
-        print(path)
-        return True, path
-    if depth <= 0:
-        return False, []
-
-    visited.append(node)
-    for neighbour in graph[node]:
-        if neighbour in visited:
-            continue
-
-        append_path = list(path)
-        append_path.append(neighbour)
-        result, new_path = depth_limited(graph, (append_path, visited), goal, depth - 1)
-        if result:
-            return True, new_path
-
-    return False, []
-
-"""
 def depth_limited(graph, start, goal, depth):
     visited = set()
     stack = deque([[start]])
 
     while stack:
-        path = stack.popleft()
+        path = stack.pop()
         node = path[-1]
         if node == goal:
-            print(path)
             return True, path
         if depth <= 0:
             return False, []
@@ -118,4 +94,3 @@ def depth_limited(graph, start, goal, depth):
         depth -= 1
 
     return False, []
-"""
