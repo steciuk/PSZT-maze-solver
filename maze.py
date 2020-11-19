@@ -72,16 +72,19 @@ class Maze:
     @classmethod
     def from_file(cls, filename):
         """Initialize maze from a file"""
-
-        with open(filename, 'r') as f:
-            lines = f.read().splitlines()
-            num_map = [[x for x in line] for line in lines]
-
-        maze = cls(len(num_map[0]), len(num_map), from_file=True)
-        maze.num_map = num_map
-        maze.maze_from_num_map()
-        maze.generate_graph()
-        return maze
+        try:
+            with open(filename, 'r') as f:
+                lines = f.read().splitlines()
+                num_map = [[x for x in line] for line in lines]
+        except:
+            print("There's no such file as {}! Maybe you wrote the name wrong?\n".format(filename))
+            return None
+        else:
+            maze = cls(len(num_map[0]), len(num_map), from_file=True)
+            maze.num_map = num_map
+            maze.maze_from_num_map()
+            maze.generate_graph()
+            return maze
 
     # for testing
     def print_cords(self):
@@ -238,6 +241,7 @@ class Maze:
             print('<line x1="0" y1="0" x2="{}" y2="0"/>'.format(width), file=f)
             print('<line x1="0" y1="0" x2="0" y2="{}"/>'.format(height), file=f)
             print('</svg>', file=f)
+
 
     def find_unvisited_neighbours(self, cell):
         """Return a list of unvisited neighbours to cell."""

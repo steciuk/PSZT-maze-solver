@@ -1,6 +1,4 @@
 from collections import deque
-from itertools import count
-
 
 def print_visited(visited, maze):
     for y in range(maze.ny):
@@ -40,7 +38,7 @@ def breadth_first(maze, start, goal):
 
                 if neighbour == goal:
                     print("Explored nodes: ", num)
-                    print_visited(visited, maze)
+                    # print_visited(visited, maze)
                     return new_path
 
             visited.append(node)
@@ -57,7 +55,7 @@ def depth_first(maze, start, goal):
         path, current = stack.pop()
         if current == goal:
             print("Checked nodes:", num)
-            print_visited(visited, maze)
+            # print_visited(visited, maze)
             return path
 
         if current in visited:
@@ -76,17 +74,20 @@ def depth_first(maze, start, goal):
 
 
 def iter_deepening(maze, start, goal):
+    num = 0
     for depth in range(maze.nx * maze.ny):
-        result, path = depth_limited(maze, start, goal, depth)
-        if result is False:
+        path, traversed = depth_limited(maze, start, goal, depth)
+        num += traversed
+        if path is None:
             continue
-        print("Found a path to " + repr(goal) + ". Resulting depth: " + str(depth))
+        print("Found a path to " + repr(goal) + ". Resulting depth: " + str(depth) + " Traversed cells: " + str(num))
         return path
 
     raise ValueError("There's no such path! (Reached maximum depth value)")
 
 
 def depth_limited(maze, start, goal, depth):
+    num = 0
     graph = maze.graph
     visited = []
     stack = deque([[start]])
@@ -95,20 +96,21 @@ def depth_limited(maze, start, goal, depth):
         path = stack.pop()
         node = path[-1]
         if node == goal:
-            print_visited(visited, maze)
-            return True, path
+            # print_visited(visited, maze)
+            return path, num
         if depth <= 0:
-            print_visited(visited, maze)
-            return False, []
+            # print_visited(visited, maze)
+            return None, num
 
         visited.append(node)
         for neighbour in graph[node]:
             if neighbour in visited:
                 continue
 
+            num += 1
             append_path = list(path)
             append_path.append(neighbour)
             stack.append(append_path)
         depth -= 1
 
-    return False, []
+    return None, num
