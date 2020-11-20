@@ -246,9 +246,9 @@ class Maze:
     def find_unvisited_neighbours(self, cell):
         """Return a list of unvisited neighbours to cell."""
 
-        delta = [('W', (-1, 0)),
-                 ('E', (1, 0)),
+        delta = [('E', (1, 0)),
                  ('S', (0, 1)),
+                 ('W', (-1, 0)),
                  ('N', (0, -1))]
         neighbours = []
         for direction, (dx, dy) in delta:

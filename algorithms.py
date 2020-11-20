@@ -1,3 +1,4 @@
+from itertools import count
 from collections import deque
 
 def print_visited(visited, maze):
@@ -75,7 +76,7 @@ def depth_first(maze, start, goal):
 
 def iter_deepening(maze, start, goal):
     num = 0
-    for depth in range(maze.nx * maze.ny):
+    for depth in count(start=0):
         path, traversed = depth_limited(maze, start, goal, depth)
         num += traversed
         if path is None:
@@ -86,23 +87,26 @@ def iter_deepening(maze, start, goal):
     raise ValueError("There's no such path! (Reached maximum depth value)")
 
 
-def depth_limited(maze, start, goal, depth):
+def depth_limited(maze, start, goal, start_depth):
     num = 0
     graph = maze.graph
     visited = []
-    stack = deque([[start]])
+    stack = deque([([start], start_depth)])
 
     while stack:
-        path = stack.pop()
+        path, depth = stack.pop()
         node = path[-1]
         if node == goal:
-            # print_visited(visited, maze)
+            print_visited(visited, maze)
             return path, num
         if depth <= 0:
-            # print_visited(visited, maze)
-            return None, num
+            visited.append(node)
+            print_visited(visited, maze)
+            continue
 
+        print_visited(visited, maze)
         visited.append(node)
+        depth -= 1
         for neighbour in graph[node]:
             if neighbour in visited:
                 continue
@@ -110,7 +114,6 @@ def depth_limited(maze, start, goal, depth):
             num += 1
             append_path = list(path)
             append_path.append(neighbour)
-            stack.append(append_path)
-        depth -= 1
+            stack.append((append_path, depth))
 
     return None, num

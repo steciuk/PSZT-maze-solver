@@ -79,16 +79,16 @@ def solver(maze):
     start, goal = maze.cell_at(0, 0), maze.cell_at(maze.nx - 1, maze.ny - 1)
     print("Solving...\n")
     print("---DFS---")
-    begin = time.time()
+    begin = time.perf_counter()
     maze.path = algorithms.depth_first(maze, start, goal)
-    end = time.time()
+    end = time.perf_counter()
     print("Time elapsed [s]: ", end - begin)
     print("{}\n".format(maze.path))
     maze.write_svg("DFS.svg")
     print("---BFS---")
-    begin = time.time()
+    begin = time.perf_counter()
     maze.path = algorithms.breadth_first(maze, start, goal)
-    end = time.time()
+    end = time.perf_counter()
     print("Time elapsed [s]: ", end - begin)
     print("{}\n".format(maze.path))
     maze.write_svg("BFS.svg")
@@ -97,9 +97,9 @@ def solver(maze):
         return
     else:
         print("---IDFS---")
-        begin = time.time()
+        begin = time.perf_counter()
         maze.path = algorithms.iter_deepening(maze, start, goal)
-        end = time.time()
+        end = time.perf_counter()
         print("Time elapsed [s]: ", end - begin)
         print("{}\n".format(maze.path))
         maze.write_svg("IDFS.svg")
@@ -118,7 +118,7 @@ def save_to_file(maze):
 
 def help_message():
     print(
-    """
+        """
     1) Create a new maze
     Creates maze from text file or generates one with properties set by the user.
     txt file should have special formatting:
@@ -138,11 +138,31 @@ def help_message():
     
     3)Save maze to text file
     Saves the maze to a text file according to the special formatting.
-    """
+        """
     )
     input("Press any button to continue...\n")
+
+"""
+def test_algorithms():
+    with open("tests.txt", 'w') as f:
+        i = 500
+        maze = Maze(i, i, 0, 0, seed=1, one_route=True)
+        start, goal = maze.cell_at(0, 0), maze.cell_at(maze.nx - 1, maze.ny - 1)
+        print("Solving for i = {}\n".format(i))
+        print("Solving for i = {}".format(i), file=f)
+        print("---DFS---", file=f)
+        begin = time.perf_counter()
+        maze.path = algorithms.depth_first(maze, start, goal)
+        end = time.perf_counter()
+        print("Time elapsed [s]: ", end - begin, file=f)
+        print("---BFS---", file=f)
+        begin = time.perf_counter()
+        maze.path = algorithms.breadth_first(maze, start, goal)
+        end = time.perf_counter()
+        print("Time elapsed [s]: ", end - begin, file=f)
+    print("end")
+"""
 
 
 if __name__ == "__main__":
     main()
-
