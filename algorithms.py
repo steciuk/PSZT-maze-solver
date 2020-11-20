@@ -1,5 +1,6 @@
 from itertools import count
 from collections import deque
+from collections import defaultdict
 
 def print_visited(visited, maze):
     for y in range(maze.ny):
@@ -76,7 +77,7 @@ def depth_first(maze, start, goal):
 
 def iter_deepening(maze, start, goal):
     num = 0
-    for depth in count(start=0):
+    for depth in count(start=3):
         path, traversed = depth_limited(maze, start, goal, depth)
         num += traversed
         if path is None:
@@ -90,8 +91,9 @@ def iter_deepening(maze, start, goal):
 def depth_limited(maze, start, goal, start_depth):
     num = 0
     graph = maze.graph
-    visited = []
     stack = deque([([start], start_depth)])
+    visited = []
+    v = {}
 
     while stack:
         path, depth = stack.pop()
@@ -100,15 +102,13 @@ def depth_limited(maze, start, goal, start_depth):
             print_visited(visited, maze)
             return path, num
         if depth <= 0:
-            visited.append(node)
-            print_visited(visited, maze)
             continue
 
-        print_visited(visited, maze)
-        visited.append(node)
         depth -= 1
+        visited.append(node)
+        v[node] = depth
         for neighbour in graph[node]:
-            if neighbour in visited:
+            if neighbour in v.keys() and depth < v[neighbour]:
                 continue
 
             num += 1
@@ -116,4 +116,5 @@ def depth_limited(maze, start, goal, start_depth):
             append_path.append(neighbour)
             stack.append((append_path, depth))
 
+    print_visited(visited, maze)
     return None, num
