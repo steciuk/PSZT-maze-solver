@@ -99,7 +99,7 @@ def depth_limited(maze, start, goal, start_depth):
         path, depth = stack.pop()
         node = path[-1]
         if node == goal:
-            print_visited(visited, maze)
+            # print_visited(visited, maze)
             return path, num
         if depth <= 0:
             continue
@@ -116,5 +116,5 @@ def depth_limited(maze, start, goal, start_depth):
             append_path.append(neighbour)
             stack.append((append_path, depth))
 
-    print_visited(visited, maze)
+    # print_visited(visited, maze)
     return None, num

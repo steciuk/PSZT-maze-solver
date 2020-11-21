@@ -1,3 +1,5 @@
+import random
+import statistics
 import time
 from maze import Maze
 import algorithms
@@ -75,36 +77,70 @@ def solver(maze):
     if maze is None:
         print("There's no labyrinth to solve right now!\nMaybe it's time to create one?\n")
         return
-
-    start, goal = maze.cell_at(0, 0), maze.cell_at(maze.nx - 1, maze.ny - 1)
-    print("Solving...\n")
-    print("---DFS---")
-    begin = time.perf_counter()
-    maze.path = algorithms.depth_first(maze, start, goal)
-    end = time.perf_counter()
-    print("Time elapsed [s]: ", end - begin)
-    print("{}\n".format(maze.path))
-    maze.write_svg("DFS.svg")
-    print("---BFS---")
-    begin = time.perf_counter()
-    maze.path = algorithms.breadth_first(maze, start, goal)
-    end = time.perf_counter()
-    print("Time elapsed [s]: ", end - begin)
-    print("{}\n".format(maze.path))
-    maze.write_svg("BFS.svg")
-    if maze.nx > 100 or maze.ny > 100:
-        print("IDFS algorithm takes a VERY long for mazes that have x or y > 100. :(")
-        return
+    at0_and_n = input("Start at (0, 0), end at (x-1, y-1)? (Y/N): ")
+    if at0_and_n == 'Y' or at0_and_n == 'y':
+        n = 1
     else:
-        print("---IDFS---")
+        route = False
+        n = int(input("Hom many times would you like to solve the maze? (each time with different start and end points): \n"))
+        seed = input("Seed (Enter to randomize): ")
+        random.seed(seed)
+
+
+    times_DFS = []
+    times_BFS = []
+    times_IDFS = []
+    print("Solving...\n")
+    while n > 0:
+        n -= 1
+        if at0_and_n == 'Y' or at0_and_n == 'y':
+            start, goal = maze.cell_at(0, 0), maze.cell_at(maze.nx - 1, maze.ny - 1)
+        else:
+            start, goal = maze.cell_at(random.randint(0, maze.nx - 1), random.randint(0, maze.ny - 1)), maze.cell_at(random.randint(0, maze.nx - 1), random.randint(0, maze.ny - 1))
+        print(n)
+
+        print("---DFS---")
         begin = time.perf_counter()
-        maze.path = algorithms.iter_deepening(maze, start, goal)
+        maze.path = algorithms.depth_first(maze, start, goal)
         end = time.perf_counter()
         print("Time elapsed [s]: ", end - begin)
+        times_DFS.append(end - begin)
         print("{}\n".format(maze.path))
-        maze.write_svg("IDFS.svg")
+        if n == 0:
+            maze.write_svg("DFS.svg")
 
-    print("Pictures will be available after closing the program.\n")
+        print("---BFS---")
+        begin = time.perf_counter()
+        maze.path = algorithms.breadth_first(maze, start, goal)
+        end = time.perf_counter()
+        print("Time elapsed [s]: ", end - begin)
+        times_BFS.append(end - begin)
+        print("{}\n".format(maze.path))
+        if n == 0:
+            maze.write_svg("BFS.svg")
+
+        if maze.nx > 100 or maze.ny > 100:
+            print("IDFS algorithm takes a VERY long for mazes that have x or y > 100. :(")
+            return
+        else:
+            print("---IDFS---")
+            begin = time.perf_counter()
+            maze.path = algorithms.iter_deepening(maze, start, goal)
+            end = time.perf_counter()
+            print("Time elapsed [s]: ", end - begin)
+            times_IDFS.append(end - begin)
+            print("{}\n".format(maze.path))
+            if n == 0:
+                maze.write_svg("IDFS.svg")
+
+    print("Solving complete!\n")
+
+    if at0_and_n != 'Y' and at0_and_n != 'y':
+        print("DFS average time: ", statistics.mean(times_DFS))
+        print("BFS average time: ", statistics.mean(times_BFS))
+        print("IDFS average time: ", statistics.mean(times_IDFS), "\n")
+
+    print("Pictures of the last mazes will be available after closing the program.\n")
 
 
 def save_to_file(maze):
