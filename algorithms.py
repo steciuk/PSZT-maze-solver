@@ -28,20 +28,19 @@ def breadth_first(maze, start, goal):
         path = queue.popleft()  # get path from the queue
         node = path[-1]  # get last cell from the path
         if node not in visited:
-            neighbours = graph[node]
-            for neighbour in neighbours:
+            if node == goal:
+                print("Explored nodes: ", num)
+                # print_visited(visited, maze)
+                return path
+
+            num += 1
+            for neighbour in graph[node]:
                 if neighbour in visited:
                     continue
 
-                num += 1
                 new_path = list(path)
                 new_path.append(neighbour)
                 queue.append(new_path)
-
-                if neighbour == goal:
-                    print("Explored nodes: ", num)
-                    # print_visited(visited, maze)
-                    return new_path
 
             visited.append(node)
     return "There's no such path!"
@@ -64,11 +63,11 @@ def depth_first(maze, start, goal):
             continue
 
         visited.append(current)
+        num += 1
         for neighbour in graph[current]:
             if neighbour in visited:
                 continue
 
-            num += 1
             append_path = list(path)
             append_path.append(neighbour)
             stack.append((append_path, neighbour))
@@ -77,12 +76,12 @@ def depth_first(maze, start, goal):
 
 def iter_deepening(maze, start, goal):
     num = 0
-    for depth in count(start=3):
+    for depth in count(start=0):
         path, traversed = depth_limited(maze, start, goal, depth)
         num += traversed
         if path is None:
             continue
-        print("Found a path to " + repr(goal) + ". Resulting depth: " + str(depth) + " Traversed cells: " + str(num))
+        print("Resulting depth: " + str(depth) + " Traversed cells: " + str(num))
         return path
 
     raise ValueError("There's no such path! (Reached maximum depth value)")
@@ -104,17 +103,15 @@ def depth_limited(maze, start, goal, start_depth):
         if depth <= 0:
             continue
 
-        depth -= 1
+        num += 1
         visited.append(node)
         v[node] = depth
         for neighbour in graph[node]:
             if neighbour in v.keys() and depth < v[neighbour]:
                 continue
 
-            num += 1
             append_path = list(path)
             append_path.append(neighbour)
-            stack.append((append_path, depth))
+            stack.append((append_path, depth - 1))
 
-    # print_visited(visited, maze)
     return None, num

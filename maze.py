@@ -217,17 +217,22 @@ class Maze:
             print('<defs>\n<style type="text/css"><![CDATA[', file=f)
             print('line {', file=f)
             print('    stroke: #000000;\n    stroke-linecap: square;', file=f)
-            print('    stroke-width: 5;\n}', file=f)
+            print('    stroke-width: 2;\n}', file=f)
             print('rect {', file=f)
             print('    fill: #cc0000;\n}', file=f)
             print(']]></style>\n</defs>', file=f)
-            # Draw the "South" and "East" walls of each cell, if present (these
-            # are the "North" and "West" walls of a neighbouring cell in
-            # general, of course).
+            edge_cell = self.path.pop(0)
+            print('<rect x="{}" y="{}" width="{}" height="{}" style="fill: #00cc00"/>'
+                  .format(edge_cell.x * scx, edge_cell.y * scy, scx + 1, scy + 1), file=f)
+            edge_cell = self.path.pop()
+            print('<rect x="{}" y="{}" width="{}" height="{}" style="fill: #0000cc"/>'
+                  .format(edge_cell.x * scx, edge_cell.y * scy, scx + 1, scy + 1), file=f)
             for cell in self.path:
                 x1, y1, h, w = cell.x * scx, cell.y * scy, scx + 1, scy + 1
                 write_square(f, x1, y1, h, w)
-
+            # Draw the "South" and "East" walls of each cell, if present (these
+            # are the "North" and "West" walls of a neighbouring cell in
+            # general, of course).
             for x in range(self.nx):
                 for y in range(self.ny):
                     if self.cell_at(x, y).walls['S']:

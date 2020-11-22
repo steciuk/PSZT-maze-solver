@@ -178,27 +178,6 @@ def help_message():
     )
     input("Press any button to continue...\n")
 
-"""
-def test_algorithms():
-    with open("tests.txt", 'w') as f:
-        i = 500
-        maze = Maze(i, i, 0, 0, seed=1, one_route=True)
-        start, goal = maze.cell_at(0, 0), maze.cell_at(maze.nx - 1, maze.ny - 1)
-        print("Solving for i = {}\n".format(i))
-        print("Solving for i = {}".format(i), file=f)
-        print("---DFS---", file=f)
-        begin = time.perf_counter()
-        maze.path = algorithms.depth_first(maze, start, goal)
-        end = time.perf_counter()
-        print("Time elapsed [s]: ", end - begin, file=f)
-        print("---BFS---", file=f)
-        begin = time.perf_counter()
-        maze.path = algorithms.breadth_first(maze, start, goal)
-        end = time.perf_counter()
-        print("Time elapsed [s]: ", end - begin, file=f)
-    print("end")
-"""
-
 
 if __name__ == "__main__":
     main()
