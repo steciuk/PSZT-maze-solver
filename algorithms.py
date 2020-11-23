@@ -1,6 +1,5 @@
 from itertools import count
 from collections import deque
-from collections import defaultdict
 
 def print_visited(visited, maze):
     for y in range(maze.ny):
@@ -14,11 +13,6 @@ def print_visited(visited, maze):
 
 
 def breadth_first(maze, start, goal):
-    """
-    BFS algorithm, which keeps track of visited nodes of the graph
-    and returns the shortest path from start to goal
-    """
-
     num = 0
     graph = maze.graph
     visited = []
@@ -26,11 +20,10 @@ def breadth_first(maze, start, goal):
 
     while queue:
         path = queue.popleft()  # get path from the queue
-        node = path[-1]  # get last cell from the path
+        node = path[-1]         # get last cell from the path
         if node not in visited:
             if node == goal:
-                print("Explored nodes: ", num)
-                # print_visited(visited, maze)
+                print("BFS Explored nodes: ", num)
                 return path
 
             num += 1
@@ -55,8 +48,7 @@ def depth_first(maze, start, goal):
     while stack:
         path, current = stack.pop()
         if current == goal:
-            print("Checked nodes:", num)
-            # print_visited(visited, maze)
+            print("DFS Explored nodes:", num)
             return path
 
         if current in visited:
@@ -71,7 +63,7 @@ def depth_first(maze, start, goal):
             append_path = list(path)
             append_path.append(neighbour)
             stack.append((append_path, neighbour))
-    return "NO WAY!"
+    return "There's no such path!"
 
 
 def iter_deepening(maze, start, goal):
@@ -81,7 +73,7 @@ def iter_deepening(maze, start, goal):
         num += traversed
         if path is None:
             continue
-        print("Resulting depth: " + str(depth) + " Traversed cells: " + str(num))
+        print("IDFS Resulting depth: " + str(depth) + ", Explored nodes: " + str(num))
         return path
 
     raise ValueError("There's no such path! (Reached maximum depth value)")
@@ -98,7 +90,6 @@ def depth_limited(maze, start, goal, start_depth):
         path, depth = stack.pop()
         node = path[-1]
         if node == goal:
-            # print_visited(visited, maze)
             return path, num
         if depth <= 0:
             continue

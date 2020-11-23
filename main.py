@@ -44,14 +44,18 @@ def create_maze():
 
     if file != "":
         maze = Maze.from_file(file)
-        print("Successfully created a maze from file!\n")
+        if maze is not None:
+            print("Successfully created a maze from file!\n")
         return maze
     else:
         try:
             width = input("Specify width (x): ")
+            if width == "0":
+                print("Dimension can't be equal zero! Setting width to 10.")
+                width = 10
             width = int(width)
             height = input("Specify height (y, if you specify nothing it will be the same as x): ")
-            if height == "":
+            if height == "" or height == "0":
                 height = width
             else:
                 height = int(height)
@@ -66,7 +70,8 @@ def create_maze():
             else:
                 route = False
             maze = Maze(width, height, 0, 0, seed=seed, one_route=route)
-            print("Successfully created random maze!\n")
+            print("Successfully created random maze! (width: {}, height: {}, seed: {}, one_route: {})\n"
+                  .format(width, height, seed, route))
             return maze
         except:
             print("Invalid value was passed to the program.\n")
@@ -85,7 +90,6 @@ def solver(maze):
         n = int(input("Hom many times would you like to solve the maze? (each time with different start and end points): \n"))
         seed = input("Seed (Enter to randomize): ")
         random.seed(seed)
-
 
     times_DFS = []
     times_BFS = []
@@ -121,7 +125,6 @@ def solver(maze):
 
         if maze.nx > 100 or maze.ny > 100:
             print("IDFS algorithm takes a VERY long for mazes that have x or y > 100. :(")
-            return
         else:
             print("---IDFS---")
             begin = time.perf_counter()
@@ -138,9 +141,11 @@ def solver(maze):
     if at0_and_n != 'Y' and at0_and_n != 'y':
         print("DFS average time: ", statistics.mean(times_DFS))
         print("BFS average time: ", statistics.mean(times_BFS))
-        print("IDFS average time: ", statistics.mean(times_IDFS), "\n")
+        if maze.nx <= 100 or maze.ny <= 100:
+            print("IDFS average time: ", statistics.mean(times_IDFS), "\n")
 
     print("Pictures of the last mazes will be available after closing the program.\n")
+    input("Press Enter to continue...")
 
 
 def save_to_file(maze):
