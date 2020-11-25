@@ -1,6 +1,8 @@
 import random
 import statistics
 import time
+import webbrowser
+from pathlib import Path
 from maze import Maze
 import algorithms
 
@@ -45,6 +47,8 @@ def create_maze():
     if file != "":
         maze = Maze.from_file(file)
         if maze is not None:
+            maze.write_svg('maze.svg')
+            webbrowser.open('maze.svg')
             print("Successfully created a maze from file!\n")
         return maze
     else:
@@ -72,6 +76,8 @@ def create_maze():
             maze = Maze(width, height, 0, 0, seed=seed, one_route=route)
             print("Successfully created random maze! (width: {}, height: {}, seed: {}, one_route: {})\n"
                   .format(width, height, seed, route))
+            maze.write_svg("maze.svg")
+            webbrowser.open('maze.svg')
             return maze
         except:
             print("Invalid value was passed to the program.\n")
@@ -144,8 +150,12 @@ def solver(maze):
         if maze.nx <= 100 or maze.ny <= 100:
             print("IDFS average time: ", statistics.mean(times_IDFS), "\n")
 
-    print("Pictures of the last mazes will be available after closing the program.\n")
-    input("Press Enter to continue...")
+    webbrowser.open('BFS.svg')
+    webbrowser.open('DFS.svg')
+    if Path('IDFS.svg').is_file():
+        webbrowser.open('IDFS.svg')
+    print("Pictures of the last analysed combination should show up in your internet browser.")
+    input("Press Enter to continue...\n")
 
 
 def save_to_file(maze):
@@ -154,7 +164,7 @@ def save_to_file(maze):
         return
 
     maze.generate_txt_save('maze.txt')
-    print("Your saved maze can be found in files maze.txt!\n")
+    print("Your saved maze can be found in files maze.txt!\nYou can use it later to load it to the program.\n")
 
 
 def help_message():
