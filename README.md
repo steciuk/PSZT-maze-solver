@@ -1,1 +1,1 @@
-# PSZT
+# Maze Solver
